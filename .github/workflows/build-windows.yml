@@ -6,8 +6,13 @@ on:
 jobs:
   build:
     runs-on: windows-latest
+    defaults:
+      run:
+        shell: pwsh
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
           submodules: recursive
 
@@ -18,22 +23,23 @@ jobs:
 
       - name: Install vcpkg
         run: |
-          git clone https://github.com/microsoft/vcpkg
-          cd vcpkg
-          .\bootstrap-vcpkg.bat
-          $env:VCPKG_ROOT = "$PWD"
-          $env:VCPKG_ROOT | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          .\vcpkg install libvpx:x64-windows-static libyuv:x64-windows-static opus:x64-windows-static aom:x64-windows-static
+          git clone https://github.com/microsoft/vcpkg "$env:USERPROFILE\vcpkg"
+          & "$env:USERPROFILE\vcpkg\bootstrap-vcpkg.bat"
+          $pkgs = @('libvpx:x64-windows-static','libyuv:x64-windows-static','opus:x64-windows-static','aom:x64-windows-static')
+          & "$env:USERPROFILE\vcpkg\vcpkg.exe" install $pkgs
 
-      - name: Download sciter.dll
+      - name: Download Sciter DLL
         run: |
           New-Item -ItemType Directory -Force -Path target\release | Out-Null
-          Invoke-WebRequest -Uri "https://raw.githubusercontent.com/c-smile/sciter-sdk/master/bin.win/x64/sciter.dll" -OutFile target\release\sciter.dll
+          Invoke-WebRequest -UseBasicParsing -Uri "https://raw.githubusercontent.com/c-smile/sciter-sdk/master/bin.win/x64/sciter.dll" -OutFile target\release\sciter.dll
 
       - name: Build
+        shell: bash
+        env:
+          VCPKG_ROOT: D:/a/rustdesk/rustdesk/vcpkg
         run: |
-          $env:VCPKG_ROOT = "$PWD\vcpkg"
-          cargo build --release
+          python3 res/inline-sciter.py
+          cargo build --locked --features inline,vram,hwcodec --release --bins
 
       - name: Rename
         run: |
