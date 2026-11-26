@@ -42,8 +42,6 @@ jobs:
           Invoke-WebRequest -UseBasicParsing -Uri "https://raw.githubusercontent.com/c-smile/sciter-sdk/master/bin.win/x64/sciter.dll" -OutFile target\release\sciter.dll
 
       - name: Build
-        env:
-          VCPKG_ROOT: ${{ env.USERPROFILE }}\vcpkg
         run: cargo build --release --target x86_64-pc-windows-msvc
 
       - name: Upload artifact
