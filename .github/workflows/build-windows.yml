@@ -21,20 +21,21 @@ jobs:
         with:
           target: x86_64-pc-windows-msvc
 
-      - name: Install LLVM
+      - name: Setup LLVM
         run: |
-          choco install -y llvm --version=15.0.2 --allow-downgrade
+          choco install -y llvm --allow-downgrade
           echo "LIBCLANG_PATH=C:\Program Files\LLVM\bin" | Out-File -FilePath $env:GITHUB_ENV -Append
 
-      - name: Install vcpkg
+      - name: Setup vcpkg
         run: |
-          git clone https://github.com/microsoft/vcpkg $env:USERPROFILE\vcpkg   
+          git clone https://github.com/microsoft/vcpkg $env:USERPROFILE\vcpkg
           & $env:USERPROFILE\vcpkg\bootstrap-vcpkg.bat
           echo "VCPKG_ROOT=$env:USERPROFILE\vcpkg" | Out-File -FilePath $env:GITHUB_ENV -Append
+          echo "$env:USERPROFILE\vcpkg\installed\x64-windows-static\tools" | Out-File -FilePath $env:GITHUB_PATH -Append
 
       - name: Install dependencies
         run: |
-          & $env:USERPROFILE\vcpkg\vcpkg.exe install   
+          & $env:USERPROFILE\vcpkg\vcpkg.exe install --triplet x64-windows-static
 
       - name: Download Sciter
         run: |
