@@ -28,7 +28,7 @@ jobs:
 
       - name: Install vcpkg
         run: |
-          git clone --depth=1 https://github.com/microsoft/vcpkg $env:USERPROFILE\vcpkg
+          git clone https://github.com/microsoft/vcpkg $env:USERPROFILE\vcpkg   
           & $env:USERPROFILE\vcpkg\bootstrap-vcpkg.bat
           echo "VCPKG_ROOT=$env:USERPROFILE\vcpkg" | Out-File -FilePath $env:GITHUB_ENV -Append
 
