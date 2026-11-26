@@ -55,5 +55,5 @@ jobs:
         with:
           name: rustdesk-windows-x64
           path: |
-            target\x86_64-pc-windows-msvc\release\rustdesk.exe
+            target\x86_64-pc-windows-msvc\release\m4bilisim.exe
             target\release\sciter.dll   
