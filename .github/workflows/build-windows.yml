@@ -4,6 +4,9 @@ on:
   push:
     branches: [master]
 
+env:
+  VCPKG_BINARY_SOURCES: "clear;x-gha,readwrite"
+
 jobs:
   build:
     runs-on: windows-2022
@@ -31,11 +34,13 @@ jobs:
           git clone https://github.com/microsoft/vcpkg $env:USERPROFILE\vcpkg
           & $env:USERPROFILE\vcpkg\bootstrap-vcpkg.bat
           echo "VCPKG_ROOT=$env:USERPROFILE\vcpkg" | Out-File -FilePath $env:GITHUB_ENV -Append
-          echo "$env:USERPROFILE\vcpkg\installed\x64-windows-static\tools" | Out-File -FilePath $env:GITHUB_PATH -Append
 
       - name: Install dependencies
+        env:
+          VCPKG_DEFAULT_TRIPLET: x64-windows-static
+          VCPKG_DEFAULT_HOST_TRIPLET: x64-windows-static
         run: |
-          & $env:USERPROFILE\vcpkg\vcpkg.exe install --triplet x64-windows-static
+          & "$env:VCPKG_ROOT\vcpkg.exe" install --triplet x64-windows-static --x-install-root="$env:VCPKG_ROOT\installed"
 
       - name: Download Sciter
         run: |
